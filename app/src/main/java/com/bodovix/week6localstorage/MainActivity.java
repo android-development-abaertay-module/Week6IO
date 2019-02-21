@@ -1,7 +1,6 @@
 package com.bodovix.week6localstorage;
 
 import android.Manifest;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Handler;
 import android.os.Message;
@@ -13,6 +12,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -23,15 +23,16 @@ public class MainActivity extends AppCompatActivity {
     private static final int WRITE_EXTERNAL_STORAGE_REQUEST = 1;
     private static final int READ_EXTERNAL_STORAGE_REQUEST = 2;
     EditText multiTextView;
+    CheckBox isExternalCB;
     Button saveBtn;
     Button clearBtn;
     Button loadBtn;
 
-    String internalStorage = "internal.txt";
+    String fileName = "internal.txt";
     FileHelper fileHelper;
     Handler handler;
-    Runnable saveInternalRunnable;
-    Runnable loadInternalRunnable;
+    Runnable saveRunnable;
+    Runnable loadRunnable;
 
 
     @Override
@@ -43,6 +44,7 @@ public class MainActivity extends AppCompatActivity {
         saveBtn = findViewById(R.id.saveBtn);
         clearBtn = findViewById(R.id.clearBtn);
         loadBtn = findViewById(R.id.loadBtn);
+        isExternalCB = findViewById(R.id.useExternalCB);
 
         checkPermissions();
         
@@ -61,11 +63,15 @@ public class MainActivity extends AppCompatActivity {
             }
         };
 
-        saveInternalRunnable = new Runnable() {
+        saveRunnable = new Runnable() {
             @Override
             public void run() {
-                fileHelper.saveToInternalStorage(internalStorage,multiTextView.getText().toString());
-
+                String result = null;
+                if (isExternalCB.isChecked()) {
+                    fileHelper.saveToInternalStorage(fileName, multiTextView.getText().toString());
+                }else{
+                    fileHelper.saveToExternalStorage(fileName,multiTextView.getText().toString());
+                }
                 Message message = new Message();
                 Bundle bundle = new Bundle();
                 bundle.putString("method","saveInternal");
@@ -74,10 +80,15 @@ public class MainActivity extends AppCompatActivity {
                 handler.sendMessage(message);
             }
         };
-        loadInternalRunnable = new Runnable() {
+        loadRunnable = new Runnable() {
             @Override
             public void run() {
-                String result = fileHelper.loadFromInternalStorage(internalStorage);
+                String result = null;
+                if (isExternalCB.isChecked()) {
+                    result = fileHelper.loadFromInternalStorage(fileName);
+                }else{
+                    result = fileHelper.loadFromExternalStorage(fileName);
+                }
                 Message message = new Message();
                 Bundle bundle = new Bundle();
                 bundle.putString("method","loadInternal");
@@ -138,7 +149,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void saveBtn_Clicked(View view) {
-        saveInternalRunnable.run();
+        saveRunnable.run();
     }
 
     public void clearBtn_Clicked(View view) {
@@ -146,6 +157,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void loadBtn_Clicked(View view) {
-        loadInternalRunnable.run();
+        loadRunnable.run();
     }
 }

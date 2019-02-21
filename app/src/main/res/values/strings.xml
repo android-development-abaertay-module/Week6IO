@@ -3,4 +3,5 @@
     <string name="load">Load</string>
     <string name="clear">Clear</string>
     <string name="save">Save</string>
+    <string name="use_external_storage">Use External Storage</string>
 </resources>

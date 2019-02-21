@@ -14,6 +14,11 @@
         android:layout_height="wrap_content"
         android:minLines="6"
         android:inputType="textMultiLine"/>
+    <CheckBox
+        android:id="@+id/useExternalCB"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/use_external_storage"/>
     <Button
         android:id="@+id/saveBtn"
         android:onClick="saveBtn_Clicked"
