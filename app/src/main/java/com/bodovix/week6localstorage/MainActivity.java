@@ -80,6 +80,7 @@ public class MainActivity extends AppCompatActivity {
                 handler.sendMessage(message);
             }
         };
+
         loadRunnable = new Runnable() {
             @Override
             public void run() {
