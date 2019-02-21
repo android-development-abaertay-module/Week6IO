@@ -1,17 +1,27 @@
 package com.bodovix.week6localstorage;
 
+import android.Manifest;
+import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Handler;
 import android.os.Message;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.bodovix.week6localstorage.model.FileHelper;
 
 public class MainActivity extends AppCompatActivity {
 
+    private static final int WRITE_EXTERNAL_STORAGE_REQUEST = 1;
+    private static final int READ_EXTERNAL_STORAGE_REQUEST = 2;
     EditText multiTextView;
     Button saveBtn;
     Button clearBtn;
@@ -34,6 +44,8 @@ public class MainActivity extends AppCompatActivity {
         clearBtn = findViewById(R.id.clearBtn);
         loadBtn = findViewById(R.id.loadBtn);
 
+        checkPermissions();
+        
         fileHelper = new FileHelper(getApplicationContext());
         handler = new Handler(){
             public void handleMessage (Message msg){
@@ -76,6 +88,53 @@ public class MainActivity extends AppCompatActivity {
         };
 
 
+    }
+
+    private void checkPermissions() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                    WRITE_EXTERNAL_STORAGE_REQUEST);
+
+        } else {
+            //permissions already granted
+        }
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                    READ_EXTERNAL_STORAGE_REQUEST);
+
+        } else {
+            //permissions already granted
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode){
+            case WRITE_EXTERNAL_STORAGE_REQUEST:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    Log.d("gs", "granted");
+                    //permissions granted
+                } else {
+                    Toast.makeText(this, "Permission Required. App may not function correctly", Toast.LENGTH_SHORT).show();
+                }
+                break;
+            case READ_EXTERNAL_STORAGE_REQUEST:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    Log.d("gs", "granted");
+                    //permissions granted
+                } else {
+                    Toast.makeText(this, "Read External Permission Required. App may not function correctly", Toast.LENGTH_SHORT).show();
+                }
+                break;
+
+        }
     }
 
     public void saveBtn_Clicked(View view) {
